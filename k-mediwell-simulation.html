@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K-MediWell | 전자북 넷플릭스 — 시뮬레이션 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1117;--ink-mid:#2a2f3a;--ink-muted:#6b7280;
+  --paper:#fdfcf8;--paper-warm:#f5f2eb;--paper-mid:#e8e4da;
+  --jade:#1a6b5a;--jade-light:#e6f4ef;--jade-mid:#2d8c72;--jade-dark:#0d4035;
+  --gold:#b8902a;--gold-light:#fdf6e3;--gold-mid:#d4a53b;
+  --crimson:#8b1a2f;--slate:#1e2d4a;
+  --serif:'Noto Serif KR','Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --display:'Playfair Display','Noto Serif KR',Georgia,serif;
+  --nav-h:64px;
+  --radius:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.7;overflow-x:hidden}
+
+/* ─── NAV ─── */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;padding:0 36px;
+  background:rgba(253,252,248,0.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(26,107,90,0.12);
+  transition:box-shadow .3s;
+}
+#nav.up{box-shadow:0 2px 24px rgba(13,17,23,0.08)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.logo-mark{
+  width:34px;height:34px;background:var(--jade);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-mark svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
+.logo-name{font-family:var(--serif);font-weight:700;font-size:17px}
+.logo-name b{color:var(--jade)}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{
+  padding:7px 18px;border-radius:8px;font-size:13px;font-weight:500;
+  border:none;background:none;cursor:pointer;color:var(--ink-muted);
+  transition:background .18s,color .18s;
+}
+.nav-tab:hover{background:var(--paper-warm);color:var(--ink)}
+.nav-tab.active{background:var(--jade);color:#fff}
+.nav-badge{
+  padding:7px 20px;border-radius:8px;
+  background:var(--gold-mid);color:#fff;
+  font-size:13px;font-weight:700;border:none;cursor:pointer;
+  letter-spacing:0.2px;transition:background .18s;
+}
+.nav-badge:hover{background:var(--gold)}
+
+/* ─── SCREENS ─── */
+.screen{display:none;min-height:100vh;padding-top:var(--nav-h)}
+.screen.active{display:block}
+
+/* ════════════════════════════════════════
+   SCREEN 0 — INTRO / PITCH
+════════════════════════════════════════ */
+#s0{background:var(--paper)}
+
+/* Hero */
+.hero-wrap{
+  min-height:calc(100vh - var(--nav-h));
+  display:grid;grid-template-columns:1fr 1fr;
+  position:relative;overflow:hidden;
+}
+.hero-left{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:80px 60px 80px 80px;position:relative;z-index:2;
+}
+.pitch-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(26,107,90,0.1);border:1px solid rgba(26,107,90,0.25);
+  color:var(--jade);font-size:11px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;padding:6px 16px;border-radius:40px;
+  margin-bottom:28px;width:fit-content;
+}
+.pitch-badge span{
+  width:6px;height:6px;border-radius:50%;background:var(--jade);
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.pitch-eyebrow{font-size:13px;color:var(--ink-muted);margin-bottom:14px}
+.pitch-h1{
+  font-family:var(--serif);font-size:clamp(36px,4.5vw,58px);
+  font-weight:700;line-height:1.1;letter-spacing:-1.5px;
+  color:var(--ink);margin-bottom:16px;
+}
+.pitch-h1 em{font-style:normal;color:var(--jade)}
+.pitch-h1 s{text-decoration-color:var(--crimson);color:var(--ink-muted);font-size:0.85em}
+.pitch-sub{
+  font-size:16px;color:var(--ink-mid);line-height:1.75;margin-bottom:36px;
+  border-left:3px solid var(--gold-mid);padding-left:18px;
+  font-family:var(--serif);font-weight:300;
+}
+.kpi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px}
+.kpi{
+  background:var(--paper-warm);border:1px solid var(--paper-mid);
+  border-radius:12px;padding:16px;
+}
+.kpi-n{font-family:var(--display);font-size:30px;font-weight:700;color:var(--jade);line-height:1}
+.kpi-l{font-size:11px;color:var(--ink-muted);margin-top:4px;line-height:1.4}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-jade{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--jade);color:#fff;
+  padding:13px 26px;border-radius:9px;font-size:15px;font-weight:600;
+  border:none;cursor:pointer;transition:background .18s,transform .12s;
+}
+.btn-jade:hover{background:var(--jade-mid);transform:translateY(-1px)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1.5px solid var(--paper-mid);color:var(--ink-mid);
+  padding:13px 22px;border-radius:9px;font-size:15px;font-weight:500;
+  background:none;cursor:pointer;transition:border-color .18s,color .18s;
+}
+.btn-ghost:hover{border-color:var(--jade);color:var(--jade)}
+
+/* Hero Right — Visual */
+.hero-right{
+  background:linear-gradient(145deg,#0d2d26 0%,#1a4a3a 50%,#081f1a 100%);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;padding:40px;
+}
+.hero-right-bg{position:absolute;inset:0;opacity:.5}
+.globe-card{
+  position:relative;z-index:2;width:100%;max-width:380px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:20px;padding:36px 32px;backdrop-filter:blur(12px);
+}
+.globe-title{
+  font-family:var(--serif);font-size:22px;color:#fff;font-weight:700;
+  margin-bottom:6px;
+}
+.globe-sub{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:28px;line-height:1.6}
+.flow-visual{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.flow-step{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:12px 16px;
+}
+.flow-dot{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+}
+.fd1{background:rgba(26,107,90,.4);border:1px solid rgba(45,140,114,.5)}
+.fd2{background:rgba(184,144,42,.3);border:1px solid rgba(212,165,59,.5)}
+.fd3{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
+.flow-text{font-size:13px;color:rgba(255,255,255,.8)}
+.flow-text b{color:#fff;display:block;font-size:12px;margin-bottom:2px}
+.globe-law{
+  background:rgba(184,144,42,0.12);border:1px solid rgba(184,144,42,.25);
+  border-radius:8px;padding:12px 18px;font-size:12px;
+  color:var(--gold-mid);font-weight:600;text-align:center;
+}
+
+/* Problem/Solution row */
+.ps-row{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--ink);overflow:hidden}
+.ps-col{padding:60px 70px}
+.ps-col.prob{background:var(--ink)}
+.ps-col.sol{background:var(--jade-dark)}
+.ps-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.pe{color:var(--crimson)}
+.se{color:var(--gold-mid)}
+.ps-h{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff;margin-bottom:16px;line-height:1.3}
+.ps-items{list-style:none;display:flex;flex-direction:column;gap:12px}
+.ps-items li{font-size:14px;color:rgba(255,255,255,.65);padding-left:20px;position:relative;line-height:1.6}
+.ps-items li::before{position:absolute;left:0}
+.ps-col.prob .ps-items li::before{content:'✗';color:var(--crimson)}
+.ps-col.sol .ps-items li::before{content:'✓';color:var(--gold-mid)}
+
+/* Market size */
+.market-section{padding:80px 80px;background:var(--paper-warm)}
+.market-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:50px}
+.market-card{
+  background:var(--paper);border:1px solid var(--paper-mid);border-radius:16px;
+  padding:28px 22px;position:relative;overflow:hidden;
+}
+.market-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--jade),var(--gold-mid));
+}
+.mc-flag{font-size:28px;margin-bottom:14px}
+.mc-num{font-family:var(--display);font-size:36px;font-weight:700;color:var(--jade);line-height:1;margin-bottom:6px}
+.mc-label{font-size:13px;color:var(--ink-muted);line-height:1.5}
+.mc-sub{font-size:12px;color:var(--jade);font-weight:600;margin-top:8px}
+
+/* Biz model */
+.biz-section{padding:80px 80px;background:var(--paper)}
+.biz-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin-top:50px}
+.biz-step{
+  padding:32px 24px;border-right:1px solid var(--paper-mid);
+  position:relative;
+}
+.biz-step:last-child{border-right:none}
+.biz-step-n{
+  font-family:var(--display);font-size:48px;font-weight:700;
+  color:var(--paper-mid);position:absolute;top:16px;right:20px;
+  line-height:1;
+}
+.biz-icon{font-size:32px;margin-bottom:16px}
+.biz-step h3{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.biz-step p{font-size:13px;color:var(--ink-muted);line-height:1.65}
+.biz-arrow{
+  position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;background:var(--jade);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;
+  z-index:2;
+}
+.biz-step:last-child .biz-arrow{display:none}
+
+/* Expected effect */
+.effect-section{padding:80px 80px;background:var(--ink);color:#fff}
+.effect-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:50px}
+.effect-card{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:28px 20px;text-align:center;
+}
+.ec-icon{font-size:32px;margin-bottom:16px}
+.ec-num{font-family:var(--display);font-size:38px;font-weight:700;color:var(--gold-mid);line-height:1;margin-bottom:8px}
+.ec-label{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5}
+
+/* CTA bottom */
+.pitch-cta{padding:80px;text-align:center;background:var(--paper-warm)}
+.pitch-cta h2{font-family:var(--serif);font-size:36px;font-weight:700;color:var(--ink);margin-bottom:16px}
+.pitch-cta p{font-size:16px;color:var(--ink-muted);margin-bottom:40px;max-width:560px;margin-left:auto;margin-right:auto}
+.cta-btnrow{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* ════════════════════════════════════════
+   SCREEN 1 — EBOOK NETFLIX DEMO
+════════════════════════════════════════ */
+#s1{background:#0a0f1a}
+.netflix-nav{
+  position:sticky;top:var(--nav-h);z-index:100;
+  background:#0a0f1a;padding:20px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.nf-logo{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff}
+.nf-logo span{color:var(--jade-mid)}
+.nf-search{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:8px 16px;
+}
+.nf-search input{
+  background:none;border:none;outline:none;color:#fff;
+  font-size:14px;width:240px;
+}
+.nf-search input::placeholder{color:rgba(255,255,255,.35)}
+.nf-search svg{stroke:rgba(255,255,255,.35);fill:none;width:16px;height:16px;flex-shrink:0}
+.nf-tags{display:flex;gap:8px}
+.nf-tag{
+  padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;
+  border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);
+  background:none;cursor:pointer;transition:all .18s;
+}
+.nf-tag:hover,.nf-tag.on{background:var(--jade);border-color:var(--jade);color:#fff}
+
+/* Featured hero */
+.nf-hero{
+  position:relative;padding:60px 48px;
+  background:linear-gradient(to right,#0a0f1a 40%,transparent 100%),
+    linear-gradient(135deg,#0d2d26,#1a4040,#0a1a30);
+  margin-bottom:40px;
+}
+.nf-hero-badge{
+  display:inline-block;background:var(--jade);color:#fff;
+  font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:4px 14px;border-radius:4px;margin-bottom:14px;
+}
+.nf-hero-title{font-family:var(--serif);font-size:42px;font-weight:700;color:#fff;margin-bottom:12px;line-height:1.15}
+.nf-hero-sub{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:28px;max-width:480px;line-height:1.65}
+.nf-hero-btns{display:flex;gap:12px}
+.nf-btn-play{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;color:var(--ink);padding:12px 26px;border-radius:8px;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;
+  transition:background .18s;
+}
+.nf-btn-play:hover{background:#e5e5e5}
+.nf-btn-more{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.15);color:#fff;
+  padding:12px 26px;border-radius:8px;font-size:14px;font-weight:600;
+  border:none;cursor:pointer;transition:background .18s;
+}
+.nf-btn-more:hover{background:rgba(255,255,255,.25)}
+
+/* Shelf */
+.nf-shelf{padding:0 48px 40px}
+.shelf-title{
+  font-family:var(--serif);font-size:20px;font-weight:700;color:#fff;
+  margin-bottom:18px;display:flex;align-items:center;gap:12px;
+}
+.shelf-title span{font-size:13px;color:var(--gold-mid);font-weight:600}
+.book-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.book-card{
+  border-radius:10px;overflow:hidden;cursor:pointer;
+  transition:transform .22s,box-shadow .22s;position:relative;
+}
+.book-card:hover{transform:scale(1.04);box-shadow:0 16px 40px rgba(0,0,0,.5);z-index:2}
+.book-cover{
+  aspect-ratio:2/3;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;padding:16px 12px;
+  position:relative;overflow:hidden;
+}
+.book-bg{position:absolute;inset:0}
+.book-text-content{position:relative;z-index:1;text-align:center;width:100%}
+.book-category{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(255,255,255,.7);margin-bottom:6px;
+}
+.book-title{
+  font-family:var(--serif);font-size:13px;font-weight:700;
+  color:#fff;line-height:1.3;margin-bottom:4px;
+}
+.book-author{font-size:10px;color:rgba(255,255,255,.55)}
+.book-badge{
+  position:absolute;top:8px;left:8px;
+  background:var(--jade);color:#fff;
+  font-size:9px;font-weight:700;letter-spacing:.5px;
+  padding:3px 8px;border-radius:4px;
+}
+.book-new{background:var(--gold-mid)}
+
+/* Reader Modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.reader-modal{
+  background:#1a1f2e;border-radius:20px;width:100%;max-width:840px;
+  max-height:90vh;overflow:hidden;display:flex;flex-direction:column;
+}
+.reader-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 28px;border-bottom:1px solid rgba(255,255,255,.08);
+}
+.reader-title{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff}
+.reader-close{
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:32px;height:32px;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.reader-body{
+  display:grid;grid-template-columns:1fr 1.6fr;flex:1;overflow:hidden;
+}
+.reader-cover-panel{
+  padding:28px;background:#141820;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;
+}
+.reader-cover-img{
+  width:140px;aspect-ratio:2/3;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:14px 10px;position:relative;overflow:hidden;
+}
+.reader-meta{text-align:center;width:100%}
+.reader-meta h3{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+.reader-meta p{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px}
+.reader-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.ri{
+  background:rgba(255,255,255,.05);border-radius:8px;
+  padding:10px 12px;text-align:center;
+}
+.ri-n{font-size:18px;font-weight:700;color:var(--jade-mid);font-family:var(--display)}
+.ri-l{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+.reader-read{
+  width:100%;padding:11px;background:var(--jade);color:#fff;
+  border:none;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;margin-top:4px;transition:background .18s;
+}
+.reader-read:hover{background:var(--jade-mid)}
+.reader-content-panel{
+  padding:28px;overflow-y:auto;border-left:1px solid rgba(255,255,255,.06);
+}
+.reader-tab-row{display:flex;gap:4px;margin-bottom:20px}
+.rtab{
+  padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;
+  border:none;background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);
+  cursor:pointer;transition:all .18s;
+}
+.rtab.on{background:var(--jade);color:#fff}
+.reader-excerpt{
+  font-family:var(--serif);font-size:15px;color:rgba(255,255,255,.8);
+  line-height:2;letter-spacing:.2px;
+}
+.reader-excerpt h4{
+  font-size:17px;color:#fff;margin:20px 0 10px;font-weight:700;
+}
+.reader-excerpt p{margin-bottom:16px;color:rgba(255,255,255,.75)}
+.reader-excerpt blockquote{
+  border-left:3px solid var(--gold-mid);margin:20px 0;
+  padding:12px 20px;background:rgba(184,144,42,.08);border-radius:0 8px 8px 0;
+  font-style:italic;color:rgba(255,255,255,.7);
+}
+.reader-excerpt .en-note{
+  font-family:var(--sans);font-size:13px;background:rgba(26,107,90,.15);
+  border:1px solid rgba(26,107,90,.2);border-radius:8px;
+  padding:14px 18px;margin-bottom:18px;color:rgba(255,255,255,.7);
+}
+.trans-toggle{
+  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+  background:rgba(255,255,255,.05);border-radius:8px;padding:12px 16px;
+}
+.trans-toggle label{font-size:13px;color:rgba(255,255,255,.6)}
+.toggle-sw{position:relative;width:38px;height:22px;cursor:pointer}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-track{
+  position:absolute;inset:0;background:rgba(255,255,255,.2);border-radius:11px;
+  transition:background .2s;
+}
+.toggle-sw input:checked+.toggle-track{background:var(--jade)}
+.toggle-thumb{
+  position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;
+  top:3px;left:3px;transition:transform .2s;
+}
+.toggle-sw input:checked~.toggle-thumb{transform:translateX(16px)}
+
+/* ════════════════════════════════════════
+   SCREEN 2 — AUTHOR SIMULATION
+════════════════════════════════════════ */
+#s2{background:var(--paper)}
+.author-layout{
+  display:grid;grid-template-columns:300px 1fr;
+  min-height:calc(100vh - var(--nav-h));
+}
+.author-sidebar{
+  background:var(--paper-warm);border-right:1px solid var(--paper-mid);
+  padding:40px 28px;
+  position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));
+  overflow-y:auto;
+}
+.author-profile{text-align:center;margin-bottom:32px}
+.author-avatar{
+  width:72px;height:72px;border-radius:50%;background:var(--jade);
+  margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  font-size:28px;border:3px solid var(--jade-light);
+}
+.author-name{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.author-role{font-size:12px;color:var(--ink-muted);margin-bottom:14px}
+.author-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.as-item{
+  background:var(--paper);border:1px solid var(--paper-mid);
+  border-radius:8px;padding:12px 10px;text-align:center;
+}
+.as-n{font-family:var(--display);font-size:20px;font-weight:700;color:var(--jade);line-height:1}
+.as-l{font-size:10px;color:var(--ink-muted);margin-top:3px}
+.sidebar-section{margin-bottom:28px}
+.ss-title{
+  font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink-muted);margin-bottom:12px;
+}
+.lang-list{display:flex;flex-direction:column;gap:8px}
+.lang-item{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:13px;
+}
+.lang-bar-wrap{width:100px;height:5px;background:var(--paper-mid);border-radius:3px}
+.lang-bar{height:100%;border-radius:3px;background:var(--jade)}
+.country-chips{display:flex;flex-wrap:wrap;gap:6px}
+.country-chip{
+  padding:4px 10px;background:var(--paper);border:1px solid var(--paper-mid);
+  border-radius:20px;font-size:11px;color:var(--ink-mid);
+}
+
+.author-main{padding:48px 60px;overflow-y:auto}
+.am-title{
+  font-family:var(--serif);font-size:28px;font-weight:700;color:var(--ink);
+  margin-bottom:6px;
+}
+.am-sub{font-size:14px;color:var(--ink-muted);margin-bottom:36px}
+.step-wizard{
+  display:flex;align-items:center;gap:0;margin-bottom:40px;
+  border:1px solid var(--paper-mid);border-radius:12px;overflow:hidden;
+}
+.wizard-step{
+  flex:1;padding:14px 16px;font-size:13px;font-weight:600;
+  border:none;background:none;cursor:pointer;
+  color:var(--ink-muted);display:flex;align-items:center;gap:8px;
+  border-right:1px solid var(--paper-mid);transition:background .18s;
+}
+.wizard-step:last-child{border-right:none}
+.wizard-step:hover{background:var(--paper-warm)}
+.wizard-step.done{color:var(--jade)}
+.wizard-step.current{background:var(--jade);color:#fff}
+.wizard-num{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;
+  background:rgba(255,255,255,.2);
+}
+.wizard-step.current .wizard-num{background:rgba(255,255,255,.3)}
+.wizard-step.done .wizard-num{background:var(--jade-light);color:var(--jade)}
+.wizard-step:not(.current):not(.done) .wizard-num{background:var(--paper-mid);color:var(--ink-muted)}
+
+/* Form panels */
+.form-panel{display:none}
+.form-panel.active{display:block}
+.form-group{margin-bottom:24px}
+.form-label{
+  font-size:13px;font-weight:600;color:var(--ink);
+  margin-bottom:8px;display:block;
+}
+.form-label span{font-size:12px;font-weight:400;color:var(--ink-muted);margin-left:6px}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:11px 16px;
+  border:1.5px solid var(--paper-mid);border-radius:8px;
+  font-family:var(--sans);font-size:14px;color:var(--ink);
+  background:var(--paper);transition:border-color .18s;outline:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--jade);
+}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.65}
+.ai-assist-btn{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--jade),var(--jade-mid));
+  color:#fff;padding:10px 20px;border-radius:8px;
+  font-size:13px;font-weight:600;border:none;cursor:pointer;
+  margin-top:8px;transition:opacity .18s;
+}
+.ai-assist-btn:hover{opacity:.88}
+.ai-output{
+  background:var(--jade-light);border:1px solid rgba(26,107,90,.2);
+  border-radius:10px;padding:18px 20px;margin-top:14px;
+  font-size:14px;color:var(--ink-mid);line-height:1.75;
+  font-family:var(--serif);font-weight:300;
+}
+.ai-output strong{color:var(--jade);font-weight:700}
+.royalty-calc{
+  background:var(--paper-warm);border:1px solid var(--paper-mid);
+  border-radius:12px;padding:24px;margin-top:20px;
+}
+.rc-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:16px}
+.rc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px}
+.rc-row span{color:var(--ink-muted)}
+.rc-row strong{color:var(--ink);font-weight:700}
+.rc-total{
+  border-top:2px solid var(--jade);margin-top:12px;padding-top:12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.rc-total span{font-size:15px;font-weight:700;color:var(--ink)}
+.rc-total strong{font-family:var(--display);font-size:28px;font-weight:700;color:var(--jade)}
+.publish-btn{
+  width:100%;padding:14px;background:var(--jade);color:#fff;
+  border:none;border-radius:10px;font-size:16px;font-weight:700;
+  cursor:pointer;transition:background .18s;margin-top:24px;
+}
+.publish-btn:hover{background:var(--jade-mid)}
+
+/* Success state */
+.publish-success{
+  display:none;text-align:center;padding:48px 24px;
+}
+.success-icon{font-size:64px;margin-bottom:20px}
+.success-title{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--jade);margin-bottom:10px}
+.success-sub{font-size:15px;color:var(--ink-muted);margin-bottom:30px;line-height:1.65}
+.reach-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:480px;margin:0 auto 30px}
+.rs-item{
+  background:var(--jade-light);border:1px solid rgba(26,107,90,.15);
+  border-radius:10px;padding:16px;text-align:center;
+}
+.rs-n{font-family:var(--display);font-size:24px;font-weight:700;color:var(--jade)}
+.rs-l{font-size:11px;color:var(--jade);margin-top:4px}
+
+/* ════════════════════════════════════════
+   SCREEN 3 — BRAIN HEALING DEMO
+════════════════════════════════════════ */
+#s3{background:#050d0a}
+.healing-layout{
+  display:grid;grid-template-columns:1fr 380px;
+  min-height:calc(100vh - var(--nav-h));gap:0;
+}
+.healing-main{
+  padding:48px;display:flex;flex-direction:column;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.healing-title{font-family:var(--serif);font-size:28px;font-weight:700;color:#fff;margin-bottom:6px}
+.healing-sub{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:36px}
+/* EEG Canvas */
+.eeg-frame{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:24px;margin-bottom:24px;flex:1;
+}
+.eeg-label-row{display:flex;justify-content:space-between;margin-bottom:12px;align-items:center}
+.eeg-channel-label{font-size:12px;color:rgba(255,255,255,.4);font-weight:600}
+.eeg-status{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:rgba(255,255,255,.5);
+}
+.eeg-status-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--jade-mid);
+  animation:blink 1.5s infinite;
+}
+canvas#eegCanvas{width:100%;height:180px;display:block}
+.eeg-waves-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.wave-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:14px;text-align:center;
+}
+.wave-name{font-size:11px;color:rgba(255,255,255,.4);font-weight:700;letter-spacing:1px;margin-bottom:6px}
+.wave-val{font-family:var(--display);font-size:24px;font-weight:700;color:#fff;line-height:1;margin-bottom:4px}
+.wave-change{font-size:10px;font-weight:700;border-radius:4px;padding:2px 6px}
+.pos{background:rgba(45,140,114,.2);color:var(--jade-mid)}
+.neg{background:rgba(184,144,42,.15);color:var(--gold-mid)}
+
+.therapy-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.therapy-btn{
+  padding:16px 14px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;
+  color:#fff;font-size:13px;font-weight:600;cursor:pointer;text-align:center;
+  transition:all .22s;
+}
+.therapy-btn:hover{border-color:var(--jade);background:rgba(26,107,90,.2)}
+.therapy-btn.active{border-color:var(--jade-mid);background:rgba(26,107,90,.25);color:var(--jade-mid)}
+.therapy-icon{font-size:22px;margin-bottom:8px}
+
+/* Healing sidebar */
+.healing-sidebar{padding:36px 28px;background:#050d0a;overflow-y:auto}
+.hs-title{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;margin-bottom:20px}
+.score-ring-wrap{text-align:center;margin-bottom:28px}
+.score-ring-wrap canvas{display:block;margin:0 auto}
+.score-label{font-family:var(--display);font-size:42px;font-weight:700;color:var(--jade-mid);margin-top:10px}
+.score-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.metric-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.metric-item{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:14px 16px;
+}
+.metric-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.metric-name{font-size:13px;color:rgba(255,255,255,.7);font-weight:500}
+.metric-val{font-size:13px;font-weight:700;color:var(--jade-mid)}
+.metric-bar-track{height:4px;background:rgba(255,255,255,.08);border-radius:2px}
+.metric-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--jade),var(--jade-mid));transition:width 1s ease}
+.session-info{
+  background:rgba(184,144,42,.08);border:1px solid rgba(184,144,42,.15);
+  border-radius:10px;padding:16px;
+}
+.si-label{font-size:11px;color:var(--gold-mid);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.si-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.si-row span{color:rgba(255,255,255,.45)}
+.si-row strong{color:#fff;font-weight:600}
+.report-btn{
+  width:100%;padding:13px;background:var(--jade);color:#fff;
+  border:none;border-radius:10px;font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:20px;transition:background .18s;
+}
+.report-btn:hover{background:var(--jade-mid)}
+
+/* ════════════════════════════════════════
+   SCREEN 4 — GLOBAL MAP
+════════════════════════════════════════ */
+#s4{background:#08101a;color:#fff}
+.global-layout{padding:48px 60px}
+.global-h{font-family:var(--serif);font-size:32px;font-weight:700;color:#fff;margin-bottom:8px}
+.global-sub{font-size:15px;color:rgba(255,255,255,.45);margin-bottom:40px}
+.global-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px}
+.hub-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:28px;position:relative;overflow:hidden;
+  cursor:pointer;transition:border-color .22s,background .22s;
+}
+.hub-card:hover,.hub-card.active{border-color:var(--jade);background:rgba(26,107,90,.1)}
+.hub-city-tag{
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold-mid);margin-bottom:12px;
+}
+.hub-city{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;margin-bottom:8px}
+.hub-role{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:18px;line-height:1.6}
+.hub-stats{display:flex;gap:16px}
+.hs{text-align:center}
+.hs-n{font-family:var(--display);font-size:22px;font-weight:700;color:var(--jade-mid);line-height:1}
+.hs-l{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px}
+.hub-flag{position:absolute;right:20px;top:20px;font-size:36px;opacity:.5}
+.pipeline-section{margin-bottom:40px}
+.pipeline-title{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;margin-bottom:20px}
+.pipeline-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative}
+.pipeline-flow::before{
+  content:'';position:absolute;top:30px;left:30px;right:30px;height:2px;
+  background:linear-gradient(90deg,var(--jade),var(--gold-mid));
+  z-index:0;
+}
+.pf-step{text-align:center;position:relative;z-index:1}
+.pf-node{
+  width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,var(--jade-dark),var(--jade));
+  border:2px solid var(--jade-mid);margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.pf-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);line-height:1.4}
+.revenue-section{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:32px;
+}
+.rev-title{font-family:var(--serif);font-size:20px;font-weight:700;color:#fff;margin-bottom:20px}
+.rev-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.rev-item{text-align:center}
+.rev-n{font-family:var(--display);font-size:30px;font-weight:700;color:var(--gold-mid);line-height:1;margin-bottom:6px}
+.rev-l{font-size:12px;color:rgba(255,255,255,.4);line-height:1.4}
+
+/* ─── SHARED UTILITIES ─── */
+.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--jade);margin-bottom:12px}
+.sec-h2{font-family:var(--serif);font-size:32px;font-weight:700;color:var(--ink);margin-bottom:14px;line-height:1.2}
+.sec-h2.light{color:#fff}
+.divider{width:48px;height:3px;background:linear-gradient(90deg,var(--jade),var(--gold-mid));border-radius:2px;margin-bottom:24px}
+.fade-in{animation:fadeUp .5s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){
+  .hero-wrap,.ps-row,.author-layout,.healing-layout,.global-grid{grid-template-columns:1fr}
+  .hero-right,.healing-sidebar{display:none}
+  section,div.author-main,div.global-layout,div.healing-main{padding:32px 24px}
+  .book-grid{grid-template-columns:repeat(2,1fr)}
+  .market-grid,.biz-steps,.effect-grid,.rev-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav id="nav">
+  <a class="logo" href="#" onclick="showScreen(0)">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18"><path d="M9 2C5.5 2 3 5 3 9s2.5 7 6 7 6-3 6-7"/><circle cx="12" cy="3.5" r="1.5" fill="#fff" stroke="none"/><ellipse cx="9" cy="9" rx="3" ry="2" fill="rgba(255,255,255,0.35)" stroke="none"/></svg>
+    </div>
+    <span class="logo-name">K-Medi<b>Well</b></span>
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showScreen(0)">🏠 피치 덱</button>
+    <button class="nav-tab" onclick="showScreen(1)">📚 전자북 넷플릭스</button>
+    <button class="nav-tab" onclick="showScreen(2)">✍️ 저자 체험</button>
+    <button class="nav-tab" onclick="showScreen(3)">🧠 치유 체험</button>
+    <button class="nav-tab" onclick="showScreen(4)">🌏 글로벌 허브</button>
+  </div>
+  <button class="nav-badge" onclick="showScreen(1)">▶ 데모 시작</button>
+</nav>
+
+<!-- ══════════════ SCREEN 0: PITCH ══════════════ -->
+<div id="s0" class="screen active">
+
+  <!-- HERO -->
+  <div class="hero-wrap">
+    <div class="hero-left">
+      <div class="pitch-badge"><span></span>모두의 창업 1라운드 선정 · 2라운드 피치</div>
+      <p class="pitch-eyebrow">국립공주대학교 스마트의료웰니스관광 대학원 · 이용근 교수</p>
+      <h1 class="pitch-h1">
+        <s>관광 대국</s>이 아니라<br>
+        <em>치유 대국</em>이다<br>
+        <span style="font-size:.6em;color:var(--ink-muted);display:block;margin-top:8px">전자북 넷플릭스로 세계를 치유한다</span>
+      </h1>
+      <p class="pitch-sub">K-컬처 팬 1.5억 명의 지적·정신적 갈증을 해소하는<br>한국 전통문화 × AI 치유관광 글로벌 콘텐츠 플랫폼</p>
+      <div class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-n">1.5억</div>
+          <div class="kpi-l">전세계 K-컬처 팬<br>(잠재 독자)</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-n">170개</div>
+          <div class="kpi-l">대사관·공관<br>채널 연계</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-n">80%</div>
+          <div class="kpi-l">AI 비용 절감<br>제작비 혁신</div>
+        </div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-jade" onclick="showScreen(1)">▶ 플랫폼 체험하기</button>
+        <button class="btn-ghost" onclick="showScreen(0);document.getElementById('prob').scrollIntoView({behavior:'smooth'})">문제/해결 보기 ↓</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <svg class="hero-right-bg" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs><radialGradient id="rg" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(45,140,114,0.25)"/><stop offset="100%" stop-color="rgba(45,140,114,0)"/></radialGradient></defs>
+        <ellipse cx="300" cy="350" rx="250" ry="250" fill="url(#rg)"/>
+        <circle cx="300" cy="350" r="200" fill="none" stroke="rgba(45,140,114,.1)" stroke-width="1"/>
+        <circle cx="300" cy="350" r="150" fill="none" stroke="rgba(45,140,114,.15)" stroke-width="1"/>
+        <circle cx="300" cy="350" r="100" fill="none" stroke="rgba(45,140,114,.2)" stroke-width="1"/>
+        <path d="M100 500 Q150 460 200 500 Q250 540 280 440 Q300 380 320 500 Q340 580 380 440 Q420 340 460 500 Q490 580 520 500" fill="none" stroke="rgba(45,140,114,.4)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="300" cy="220" r="8" fill="rgba(45,140,114,.6)"/>
+        <circle cx="180" cy="310" r="5" fill="rgba(184,144,42,.5)"/>
+        <circle cx="420" cy="310" r="5" fill="rgba(184,144,42,.5)"/>
+        <circle cx="220" cy="430" r="6" fill="rgba(45,140,114,.4)"/>
+        <circle cx="380" cy="430" r="6" fill="rgba(45,140,114,.4)"/>
+        <line x1="300" y1="220" x2="180" y2="310" stroke="rgba(45,140,114,.25)" stroke-width="1"/>
+        <line x1="300" y1="220" x2="420" y2="310" stroke="rgba(45,140,114,.25)" stroke-width="1"/>
+        <line x1="180" y1="310" x2="220" y2="430" stroke="rgba(45,140,114,.15)" stroke-width="1"/>
+        <line x1="420" y1="310" x2="380" y2="430" stroke="rgba(45,140,114,.15)" stroke-width="1"/>
+      </svg>
+      <div class="globe-card">
+        <div class="globe-title">전자북 넷플릭스</div>
+        <div class="globe-sub">전통을 번역하고, 콘텐츠로 만들고,<br>세계로 확산한다</div>
+        <div class="flow-visual">
+          <div class="flow-step">
+            <div class="flow-dot fd1">🌿</div>
+            <div class="flow-text"><b>한국 전통 지식인</b>국악인·한의사·무속예술가 등 원천 지식</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot fd2">🤖</div>
+            <div class="flow-text"><b>AI 번역·편집</b>80% 비용 절감 · 다국어 자동화</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot fd3">🌏</div>
+            <div class="flow-text"><b>글로벌 1,400개 플랫폼</b>170개국 대사관 연계 배포</div>
+          </div>
+        </div>
+        <div class="globe-law">치유관광산업육성법 2026.4.9 시행<br><small style="font-weight:400;color:rgba(255,255,255,.4)">K-MediWell · Local roots → Global expansion</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM / SOLUTION -->
+  <div id="prob" class="ps-row">
+    <div class="ps-col prob">
+      <div class="ps-eyebrow pe">Q2. 문제 — 누가 어떤 문제를 겪는가</div>
+      <h2 class="ps-h">대한민국이 직면한<br>세 가지 위기</h2>
+      <ul class="ps-items">
+        <li><b>외국인 1.5억 K-컬처 팬:</b> 영상·K-팝에 열광하지만, 그 이면의 전통·철학·정신세계 학습 콘텐츠가 없다. 언어 장벽으로 접근 불가.</li>
+        <li><b>전통 지식인의 고립:</b> 국악인·한의사·무속예술가 등 수백 년 지식 보유자들이 글로벌 저자가 될 경로가 없어 사장될 위기.</li>
+        <li><b>한국 경제 구조:</b> 관광 수지 적자 수십조 원, 저부가가치 관광 산업이 청년 일자리를 잠식. 콘텐츠 고부가가치화가 국가적 과제.</li>
+      </ul>
+    </div>
+    <div class="ps-col sol">
+      <div class="ps-eyebrow se">Q2. 해결 — K-MediWell 전자북 넷플릭스</div>
+      <h2 class="ps-h">세 가지 문제를<br>동시에 해결하는 플랫폼</h2>
+      <ul class="ps-items">
+        <li><b>외국인 갈증 해소:</b> 영상 너머 한국의 깊은 인문학적 가치를 영어 전자북으로 제공. 단순 관광객 → '심층적 K-문화 소비자'로 전환.</li>
+        <li><b>전통 지식인 글로벌 저자화:</b> AI 번역·편집으로 80% 비용 절감. 1,400개 글로벌 플랫폼 직접 연결. '디지털 기념품' 경제 창출.</li>
+        <li><b>국가 경제 기여:</b> 저자본·고부가가치 구조. 글로벌 디지털 노마드 양성으로 양질의 일자리 창출. 치유관광산업 전체의 글로벌 인프라.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="market-section">
+    <div class="sec-eyebrow">시장 규모</div>
+    <h2 class="sec-h2">도달 가능한 거대 시장</h2>
+    <div class="divider"></div>
+    <div class="market-grid">
+      <div class="market-card">
+        <div class="mc-flag">🌍</div>
+        <div class="mc-num">1.5억</div>
+        <div class="mc-label">전세계 K-컬처 팬<br>(잠재 독자 풀)</div>
+        <div class="mc-sub">넷플릭스 한국 콘텐츠 시청자 기준</div>
+      </div>
+      <div class="market-card">
+        <div class="mc-flag">📚</div>
+        <div class="mc-num">1,400개</div>
+        <div class="mc-label">글로벌 전자책 유통<br>플랫폼 직접 연결</div>
+        <div class="mc-sub">Amazon, Apple Books 등 포함</div>
+      </div>
+      <div class="market-card">
+        <div class="mc-flag">🏛</div>
+        <div class="mc-num">170개</div>
+        <div class="mc-label">한국 대사관·공관<br>공식 채널 연계</div>
+        <div class="mc-sub">정부 채널 → 신뢰도·배포력 확보</div>
+      </div>
+      <div class="market-card">
+        <div class="mc-flag">💰</div>
+        <div class="mc-num">수십조</div>
+        <div class="mc-label">연간 관광수지 적자<br>대체 가능 시장</div>
+        <div class="mc-sub">저자본 고부가가치 대안 모델</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIZ MODEL -->
+  <div class="biz-section">
+    <div class="sec-eyebrow">Q3. 사업 구조 — 4단계 실현 로드맵</div>
+    <h2 class="sec-h2">어떻게 실현하는가</h2>
+    <div class="divider"></div>
+    <div class="biz-steps">
+      <div class="biz-step">
+        <div class="biz-step-n">01</div>
+        <div class="biz-icon">🏛</div>
+        <h3>대사관 네트워크</h3>
+        <p>170여 개 공관의 K-컨텐츠 채널에 공식 루트. 정부 신뢰를 기반으로 6개 언어로 동시 다발 배포.</p>
+        <div class="biz-arrow">›</div>
+      </div>
+      <div class="biz-step">
+        <div class="biz-step-n">02</div>
+        <div class="biz-icon">🤖</div>
+        <h3>AI 워크플로우</h3>
+        <p>AI 소설 작성·번역·감수·디자인의 번역 구조로 제작 비용 80%를 절감하며 소규모 팀으로도 운영 가능.</p>
+        <div class="biz-arrow">›</div>
+      </div>
+      <div class="biz-step">
+        <div class="biz-step-n">03</div>
+        <div class="biz-icon">⚕️</div>
+        <h3>치유관광산업 연계</h3>
+        <p>정부 지원 + K-MediWell 브랜드를 기반으로 모든 산업 전체의 글로벌 콘텐츠 인프라로 확장.</p>
+        <div class="biz-arrow">›</div>
+      </div>
+      <div class="biz-step">
+        <div class="biz-step-n">04</div>
+        <div class="biz-icon">🌐</div>
+        <h3>글로벌 확산</h3>
+        <p>뉴욕·파리·도쿄 3대 거점 설정. "Local roots → Glocal translation → Global expansion" 구조로 70개국 확산.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EFFECT -->
+  <div class="effect-section">
+    <div class="sec-eyebrow" style="color:var(--gold-mid)">기대 효과</div>
+    <h2 class="sec-h2 light">공개 제출 자료 기준 수치</h2>
+    <div class="divider" style="background:linear-gradient(90deg,var(--jade-mid),var(--gold-mid))"></div>
+    <div class="effect-grid">
+      <div class="effect-card">
+        <div class="ec-icon">💵</div>
+        <div class="ec-num">4.0</div>
+        <div class="ec-label">예상 투자 대비<br>회수 배율 (ROI)</div>
+      </div>
+      <div class="effect-card">
+        <div class="ec-icon">✂️</div>
+        <div class="ec-num">80%</div>
+        <div class="ec-label">AI 활용<br>제작비 절감</div>
+      </div>
+      <div class="effect-card">
+        <div class="ec-icon">📖</div>
+        <div class="ec-num">6개국↑</div>
+        <div class="ec-label">1년 내 동시 출판<br>언어 수</div>
+      </div>
+      <div class="effect-card">
+        <div class="ec-icon">👩‍💻</div>
+        <div class="ec-num">TBD</div>
+        <div class="ec-label">글로벌 디지털<br>노마드 일자리 창출</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="pitch-cta">
+    <h2>지금 직접 체험해 보세요</h2>
+    <p>K-MediWell 전자북 넷플릭스 플랫폼 — 외국인 독자로, 전통 지식인 저자로, 치유 체험자로 직접 시뮬레이션해 보세요.</p>
+    <div class="cta-btnrow">
+      <button class="btn-jade" onclick="showScreen(1)">📚 독자 체험 — 전자북 탐색</button>
+      <button class="btn-jade" style="background:var(--gold-mid)" onclick="showScreen(2)">✍️ 저자 체험 — 출판 시뮬레이션</button>
+      <button class="btn-jade" style="background:var(--slate)" onclick="showScreen(3)">🧠 치유 체험 — 뇌파 데모</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 1: EBOOK NETFLIX ══════════════ -->
+<div id="s1" class="screen">
+  <div class="netflix-nav">
+    <div class="nf-logo">K-Medi<span>Well</span> eBook</div>
+    <div class="nf-search">
+      <svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4" stroke-width="1.5"/><line x1="10" y1="10" x2="14" y2="14" stroke-width="1.5"/></svg>
+      <input id="bookSearch" type="text" placeholder="전통 치유, 국악, 한의학…" oninput="filterBooks(this.value)">
+    </div>
+    <div class="nf-tags">
+      <button class="nf-tag on" onclick="setTag(this,'전체')">전체</button>
+      <button class="nf-tag" onclick="setTag(this,'치유')">치유</button>
+      <button class="nf-tag" onclick="setTag(this,'국악')">국악</button>
+      <button class="nf-tag" onclick="setTag(this,'한의학')">한의학</button>
+      <button class="nf-tag" onclick="setTag(this,'무속')">무속</button>
+      <button class="nf-tag" onclick="setTag(this,'철학')">철학</button>
+    </div>
+  </div>
+
+  <!-- Featured -->
+  <div class="nf-hero">
+    <div class="nf-hero-badge">✦ K-MediWell 이달의 선정작</div>
+    <div class="nf-hero-title">기(氣)의 과학 — 동양 에너지 의학의 세계화</div>
+    <div class="nf-hero-sub">30년 에너지 치료 임상 경험을 바탕으로 하버드 뇌과학과 동양 기 치료를 접목한 혁신적 통합 의학서. 영문판 동시 출판.</div>
+    <div class="nf-hero-btns">
+      <button class="nf-btn-play" onclick="openReader('energy')">▶ 지금 읽기</button>
+      <button class="nf-btn-more" onclick="openReader('energy')">+ 자세히 보기</button>
+    </div>
+  </div>
+
+  <!-- Shelf 1 -->
+  <div class="nf-shelf">
+    <div class="shelf-title">🌿 치유·웰니스 <span>신규 출판</span></div>
+    <div class="book-grid" id="bookGrid1">
+      <!-- Books injected by JS -->
+    </div>
+  </div>
+
+  <!-- Shelf 2 -->
+  <div class="nf-shelf" style="margin-top:8px">
+    <div class="shelf-title">🥁 전통예술·문화 <span>글로벌 베스트셀러</span></div>
+    <div class="book-grid" id="bookGrid2"></div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 2: AUTHOR SIM ══════════════ -->
+<div id="s2" class="screen">
+  <div class="author-layout">
+    <div class="author-sidebar">
+      <div class="author-profile">
+        <div class="author-avatar">🎎</div>
+        <div class="author-name">김정숙 (Kim Jeong-suk)</div>
+        <div class="author-role">25년 경력 국악인 · 가야금 명인</div>
+        <div class="author-stats">
+          <div class="as-item"><div class="as-n">0</div><div class="as-l">출판 작품</div></div>
+          <div class="as-item"><div class="as-n" id="readerCount">0</div><div class="as-l">누적 독자</div></div>
+          <div class="as-item"><div class="as-n" id="royaltyTotal">₩0</div><div class="as-l">예상 로열티</div></div>
+          <div class="as-item"><div class="as-n" id="countryCount">0</div><div class="as-l">배포 국가</div></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="ss-title">번역 언어 현황</div>
+        <div class="lang-list">
+          <div class="lang-item"><span>🇺🇸 영어</span><div class="lang-bar-wrap"><div class="lang-bar" id="langEN" style="width:0%"></div></div></div>
+          <div class="lang-item"><span>🇯🇵 일본어</span><div class="lang-bar-wrap"><div class="lang-bar" id="langJP" style="width:0%"></div></div></div>
+          <div class="lang-item"><span>🇨🇳 중국어</span><div class="lang-bar-wrap"><div class="lang-bar" id="langCN" style="width:0%"></div></div></div>
+          <div class="lang-item"><span>🇫🇷 프랑스어</span><div class="lang-bar-wrap"><div class="lang-bar" id="langFR" style="width:0%"></div></div></div>
+          <div class="lang-item"><span>🇩🇪 독일어</span><div class="lang-bar-wrap"><div class="lang-bar" id="langDE" style="width:0%"></div></div></div>
+          <div class="lang-item"><span>🇪🇸 스페인어</span><div class="lang-bar-wrap"><div class="lang-bar" id="langES" style="width:0%"></div></div></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="ss-title">독자 국가</div>
+        <div class="country-chips" id="countryChips">
+          <span class="country-chip" style="opacity:.3">아직 없음</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="author-main">
+      <div class="am-title">전통 지식인 → 글로벌 저자로</div>
+      <div class="am-sub">출판 시뮬레이션 — 당신의 지식이 세계로 나가는 여정을 체험하세요</div>
+      <div class="step-wizard">
+        <button class="wizard-step current" onclick="goStep(1)" id="wiz1">
+          <div class="wizard-num">1</div>책 정보 입력
+        </button>
+        <button class="wizard-step" onclick="goStep(2)" id="wiz2">
+          <div class="wizard-num">2</div>AI 번역·편집
+        </button>
+        <button class="wizard-step" onclick="goStep(3)" id="wiz3">
+          <div class="wizard-num">3</div>로열티 설계
+        </button>
+        <button class="wizard-step" onclick="goStep(4)" id="wiz4">
+          <div class="wizard-num">4</div>글로벌 배포
+        </button>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="form-panel active" id="fp1">
+        <div class="form-group">
+          <label class="form-label">책 제목 <span>(한국어)</span></label>
+          <input class="form-input" id="bookTitle" type="text" placeholder="예: 가야금의 소리 — 현에서 치유를 찾다" value="가야금의 소리 — 현에서 치유를 찾다">
+        </div>
+        <div class="form-group">
+          <label class="form-label">카테고리</label>
+          <select class="form-select" id="bookCat">
+            <option>전통음악·국악</option>
+            <option>한의학·치유</option>
+            <option>무속·정신세계</option>
+            <option>주역·철학</option>
+            <option>전통요리</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">핵심 내용 <span>(2~3문장)</span></label>
+          <textarea class="form-textarea" id="bookDesc" placeholder="당신이 보유한 지식을 간단히 설명해 주세요…">가야금 25현의 각 현이 인간 몸의 에너지 경락과 대응된다는 동양 음악 치유의 원리를 담았습니다. 25년 연주 경험을 통해 발견한 소리와 치유의 관계를 현대 뇌과학 언어로 재해석합니다.</textarea>
+        </div>
+        <button class="btn-jade" onclick="goStep(2)">다음 단계 — AI 번역 시작 →</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-panel" id="fp2">
+        <div class="form-group">
+          <label class="form-label">원고 내용 입력</label>
+          <textarea class="form-textarea" id="rawText" placeholder="한국어로 작성한 내용을 입력하세요…" style="min-height:160px">가야금의 소리는 단순한 음악이 아닙니다. 고대 한국인들은 이 악기의 각 현이 인체의 기(氣) 흐름과 공명한다고 믿었습니다. 첫 번째 현은 신장의 에너지를, 두 번째는 간의 기운을 자극합니다. 나는 25년 동안 암 환자들에게 가야금 연주를 들려주며 그들의 고통이 완화되는 것을 목격했습니다.</textarea>
+        </div>
+        <div class="trans-toggle">
+          <label class="toggle-sw">
+            <input type="checkbox" id="autoTrans" onchange="toggleTrans(this)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <label for="autoTrans">AI 자동 번역 켜기 (영어)</label>
+        </div>
+        <button class="ai-assist-btn" onclick="runAI()">✦ AI 번역·편집 실행</button>
+        <div id="aiOutput" style="display:none" class="ai-output">
+          <strong>🇺🇸 English Translation (AI Generated)</strong><br><br>
+          The sound of the gayageum is not merely music. Ancient Koreans believed that each string of this instrument resonates with the flow of <em>gi</em> (氣) — the vital energy within the human body. The first string stimulates kidney energy; the second, the liver's vital force. Over 25 years, I have witnessed cancer patients find relief from their pain as I played for them...<br><br>
+          <strong>✦ AI 편집 제안:</strong> 도입부에 하버드 뇌과학(Christopher Palmer) 연구 인용 추가를 권장합니다. 독자 신뢰도 +34% 향상 예상.
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px">
+          <button class="btn-ghost" onclick="goStep(1)">← 이전</button>
+          <button class="btn-jade" onclick="goStep(3)">다음 단계 — 로열티 설계 →</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-panel" id="fp3">
+        <div class="form-group">
+          <label class="form-label">예상 가격 (USD)</label>
+          <input class="form-input" type="number" id="price" value="9.99" oninput="calcRoyalty()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">목표 판매 부수 (1년)</label>
+          <input class="form-input" type="number" id="sales" value="500" oninput="calcRoyalty()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">배포 언어 선택</label>
+          <select class="form-select" id="langCount" onchange="calcRoyalty()">
+            <option value="1">영어만 (1개 언어)</option>
+            <option value="3" selected>영어·일어·중국어 (3개)</option>
+            <option value="6">6개 언어 전체</option>
+          </select>
+        </div>
+        <div class="royalty-calc" id="royaltyCalc">
+          <div class="rc-title">💰 예상 수익 계산</div>
+          <div class="rc-row"><span>단가</span><strong id="rc-price">$9.99</strong></div>
+          <div class="rc-row"><span>×판매 부수</span><strong id="rc-sales">500부</strong></div>
+          <div class="rc-row"><span>×언어 수 배율</span><strong id="rc-lang">×3</strong></div>
+          <div class="rc-row"><span>저자 로열티 (35%)</span><strong id="rc-rate">35%</strong></div>
+          <div class="rc-row"><span>플랫폼 수수료</span><strong>-15%</strong></div>
+          <div class="rc-total">
+            <span>연간 예상 로열티</span>
+            <strong id="rc-total">₩0</strong>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px">
+          <button class="btn-ghost" onclick="goStep(2)">← 이전</button>
+          <button class="btn-jade" onclick="goStep(4)">다음 단계 — 글로벌 배포 →</button>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="form-panel" id="fp4">
+        <div class="form-group">
+          <label class="form-label">배포 채널 선택</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid var(--paper-mid);border-radius:8px;cursor:pointer">
+              <input type="checkbox" checked> <span style="font-size:13px">🇺🇸 Amazon Kindle</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid var(--paper-mid);border-radius:8px;cursor:pointer">
+              <input type="checkbox" checked> <span style="font-size:13px">🍎 Apple Books</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid var(--paper-mid);border-radius:8px;cursor:pointer">
+              <input type="checkbox" checked> <span style="font-size:13px">🏛 대사관 170개국</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px solid var(--paper-mid);border-radius:8px;cursor:pointer">
+              <input type="checkbox"> <span style="font-size:13px">🌐 Kobo · Rakuten</span>
+            </label>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px">
+          <button class="btn-ghost" onclick="goStep(3)">← 이전</button>
+          <button class="publish-btn" onclick="publishBook()">🚀 출판 시뮬레이션 완료!</button>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="publish-success" id="publishSuccess">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">축하합니다! 전세계로 배포되었습니다</div>
+        <div class="success-sub">
+          <strong id="s-title">가야금의 소리</strong>가 전 세계 독자들에게 전달됩니다.<br>
+          K-MediWell 플랫폼이 전통 지식인의 글로벌 저자화를 실현했습니다.
+        </div>
+        <div class="reach-stats">
+          <div class="rs-item"><div class="rs-n">1,400</div><div class="rs-l">연결 플랫폼</div></div>
+          <div class="rs-item"><div class="rs-n" id="s-readers">1,500</div><div class="rs-l">예상 초기 독자</div></div>
+          <div class="rs-item"><div class="rs-n" id="s-countries">35</div><div class="rs-l">배포 국가</div></div>
+        </div>
+        <button class="btn-jade" onclick="resetAuthor()">↺ 다시 시뮬레이션</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 3: BRAIN HEALING ══════════════ -->
+<div id="s3" class="screen">
+  <div class="healing-layout">
+    <div class="healing-main">
+      <div class="healing-title">🧠 뉴로하모니 뇌파 치유 체험</div>
+      <div class="healing-sub">실시간 EEG 시뮬레이션 — 치유 테라피 선택 후 뇌파 변화를 확인하세요</div>
+
+      <div class="eeg-frame">
+        <div class="eeg-label-row">
+          <span class="eeg-channel-label">EEG · 4채널 실시간 모니터링</span>
+          <div class="eeg-status"><div class="eeg-status-dot"></div>측정 중</div>
+        </div>
+        <canvas id="eegCanvas" width="800" height="180"></canvas>
+        <div class="eeg-waves-row" id="waveCards">
+          <div class="wave-card">
+            <div class="wave-name">DELTA δ</div>
+            <div class="wave-val" id="wd">1.2 Hz</div>
+            <div class="wave-change neg" id="wdc">수면회복</div>
+          </div>
+          <div class="wave-card">
+            <div class="wave-name">ALPHA α</div>
+            <div class="wave-val" id="wa">8.4 Hz</div>
+            <div class="wave-change pos" id="wac">↑ 활성</div>
+          </div>
+          <div class="wave-card">
+            <div class="wave-name">BETA β</div>
+            <div class="wave-val" id="wb">22.1 Hz</div>
+            <div class="wave-change neg" id="wbc">↓ 스트레스</div>
+          </div>
+          <div class="wave-card">
+            <div class="wave-name">THETA θ</div>
+            <div class="wave-val" id="wt">5.8 Hz</div>
+            <div class="wave-change pos" id="wtc">↑ 명상</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;font-size:13px;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.5px">치유 테라피 선택</div>
+      <div class="therapy-row">
+        <button class="therapy-btn active" id="t0" onclick="selectTherapy(0)">
+          <div class="therapy-icon">🌿</div>기(氣) 에너지 테라피
+        </button>
+        <button class="therapy-btn" id="t1" onclick="selectTherapy(1)">
+          <div class="therapy-icon">🥁</div>국악·가야금 소리 치유
+        </button>
+        <button class="therapy-btn" id="t2" onclick="selectTherapy(2)">
+          <div class="therapy-icon">🌲</div>금강 자연 산림 테라피
+        </button>
+      </div>
+    </div>
+
+    <div class="healing-sidebar">
+      <div class="hs-title">치유 점수</div>
+      <div class="score-ring-wrap">
+        <canvas id="ringCanvas" width="160" height="160"></canvas>
+        <div class="score-label" id="scoreLabel">72</div>
+        <div class="score-sub" id="scoreSub">치유 진행 중...</div>
+      </div>
+      <div class="hs-title" style="margin-bottom:12px">세부 지표</div>
+      <div class="metric-list">
+        <div class="metric-item">
+          <div class="metric-header"><span class="metric-name">스트레스 완화</span><span class="metric-val" id="mv1">64%</span></div>
+          <div class="metric-bar-track"><div class="metric-bar-fill" id="mb1" style="width:64%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-header"><span class="metric-name">수면 질</span><span class="metric-val" id="mv2">58%</span></div>
+          <div class="metric-bar-track"><div class="metric-bar-fill" id="mb2" style="width:58%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-header"><span class="metric-name">집중력</span><span class="metric-val" id="mv3">71%</span></div>
+          <div class="metric-bar-track"><div class="metric-bar-fill" id="mb3" style="width:71%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-header"><span class="metric-name">에너지 항상성</span><span class="metric-val" id="mv4">49%</span></div>
+          <div class="metric-bar-track"><div class="metric-bar-fill" id="mb4" style="width:49%"></div></div>
+        </div>
+      </div>
+      <div class="session-info">
+        <div class="si-label">세션 정보</div>
+        <div class="si-row"><span>테라피</span><strong id="si-therapy">기(氣) 에너지</strong></div>
+        <div class="si-row"><span>경과 시간</span><strong id="si-time">00:00</strong></div>
+        <div class="si-row"><span>측정 횟수</span><strong id="si-count">0회</strong></div>
+        <div class="si-row"><span>장소</span><strong>세종 금강자연휴양림</strong></div>
+      </div>
+      <button class="report-btn" onclick="generateReport()">📊 치유 리포트 생성</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 4: GLOBAL MAP ══════════════ -->
+<div id="s4" class="screen">
+  <div class="global-layout">
+    <div class="global-h">글로벌 확산 허브</div>
+    <div class="global-sub">Local roots → Glocal translation engine → Global expansion</div>
+    <div class="global-grid">
+      <div class="hub-card active" onclick="selectHub(this,'뉴욕','K-힐링 북미 전초기지')">
+        <div class="hub-flag">🗽</div>
+        <div class="hub-city-tag">STEP 01 · North America HQ</div>
+        <div class="hub-city">뉴욕 New York</div>
+        <div class="hub-role">미국 내 한인 커뮤니티 + 주류 웰니스 시장 공략. Amazon Kindle 배포 최대 거점. K-BEPC L3 마스터 2명 파견.</div>
+        <div class="hub-stats">
+          <div class="hs"><div class="hs-n">4.2만</div><div class="hs-l">예상 독자</div></div>
+          <div class="hs"><div class="hs-n">12개</div><div class="hs-l">파트너십</div></div>
+          <div class="hs"><div class="hs-n">2026 Q3</div><div class="hs-l">개소 목표</div></div>
+        </div>
+      </div>
+      <div class="hub-card" onclick="selectHub(this,'파리','K-힐링 유럽 문화 거점')">
+        <div class="hub-flag">🗼</div>
+        <div class="hub-city-tag">STEP 01 · Europe HQ</div>
+        <div class="hub-city">파리 Paris</div>
+        <div class="hub-role">유럽 내 K-컬처 팬 최대 밀집 지역. 유네스코 본부 연계 전통문화 콘텐츠 사업. 프랑스어·독일어·스페인어 번역 거점.</div>
+        <div class="hub-stats">
+          <div class="hs"><div class="hs-n">3.8만</div><div class="hs-l">예상 독자</div></div>
+          <div class="hs"><div class="hs-n">8개</div><div class="hs-l">파트너십</div></div>
+          <div class="hs"><div class="hs-n">2026 Q4</div><div class="hs-l">개소 목표</div></div>
+        </div>
+      </div>
+      <div class="hub-card" onclick="selectHub(this,'도쿄','K-힐링 아시아 허브')">
+        <div class="hub-flag">🗾</div>
+        <div class="hub-city-tag">STEP 02 · Asia Pacific HQ</div>
+        <div class="hub-city">도쿄 Tokyo</div>
+        <div class="hub-role">일본 K-컬처 팬 4,000만 명 최근접 시장. Rakuten Kobo 연계. 한·일 전통 치유 비교문화 콘텐츠로 차별화.</div>
+        <div class="hub-stats">
+          <div class="hs"><div class="hs-n">5.1만</div><div class="hs-l">예상 독자</div></div>
+          <div class="hs"><div class="hs-n">15개</div><div class="hs-l">파트너십</div></div>
+          <div class="hs"><div class="hs-n">2027 Q1</div><div class="hs-l">개소 목표</div></div>
+        </div>
+      </div>
+      <div class="hub-card" onclick="selectHub(this,'서울','K-MediWell 본부')">
+        <div class="hub-flag">🏛</div>
+        <div class="hub-city-tag">HQ · 한국 본부</div>
+        <div class="hub-city">세종·공주 Sejong</div>
+        <div class="hub-role">국립공주대학교 스마트의료웰니스관광대학원. 치유관광산업육성법 기반 K-BEPC 전문가 양성. 금강자연휴양림 테스트베드 운영.</div>
+        <div class="hub-stats">
+          <div class="hs"><div class="hs-n">170개</div><div class="hs-l">대사관 연계</div></div>
+          <div class="hs"><div class="hs-n">1,400</div><div class="hs-l">플랫폼 연결</div></div>
+          <div class="hs"><div class="hs-n">Active</div><div class="hs-l">운영 중</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipeline-section">
+      <div class="pipeline-title">글로벌 확산 파이프라인</div>
+      <div class="pipeline-flow">
+        <div class="pf-step">
+          <div class="pf-node">🌿</div>
+          <div class="pf-label">한국 전통<br>지식인 발굴</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-node">🤖</div>
+          <div class="pf-label">AI 번역·<br>편집 자동화</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-node">🏛</div>
+          <div class="pf-label">대사관<br>170개국 배포</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-node">📚</div>
+          <div class="pf-label">글로벌 1,400<br>플랫폼 유통</div>
+        </div>
+        <div class="pf-step">
+          <div class="pf-node">💰</div>
+          <div class="pf-label">로열티<br>저자 환원</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="revenue-section">
+      <div class="rev-title">예상 사업 성과 (3년 누적)</div>
+      <div class="rev-grid">
+        <div class="rev-item">
+          <div class="rev-n">4.0×</div>
+          <div class="rev-l">투자 대비<br>회수 배율</div>
+        </div>
+        <div class="rev-item">
+          <div class="rev-n">70개국</div>
+          <div class="rev-l">직접 도달<br>국가 수</div>
+        </div>
+        <div class="rev-item">
+          <div class="rev-n">305명↑</div>
+          <div class="rev-l">글로벌 저자<br>양성 목표</div>
+        </div>
+        <div class="rev-item">
+          <div class="rev-n">K-힐링</div>
+          <div class="rev-l">K-팝·K-푸드 이은<br>세 번째 한국 브랜드</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- READER MODAL -->
+<div class="modal-overlay" id="readerModal">
+  <div class="reader-modal">
+    <div class="reader-header">
+      <div class="reader-title" id="modalTitle">기(氣)의 과학</div>
+      <button class="reader-close" onclick="closeReader()">✕</button>
+    </div>
+    <div class="reader-body">
+      <div class="reader-cover-panel">
+        <div class="reader-cover-img" id="modalCover" style="background:linear-gradient(145deg,#0d2d26,#2d8c72)">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,.3)"></div>
+          <div style="position:relative;z-index:1;text-align:center;width:100%">
+            <div style="font-size:9px;color:rgba(255,255,255,.7);font-weight:700;letter-spacing:1px;margin-bottom:4px">K-MEDIWELL</div>
+            <div style="font-family:var(--serif);font-size:12px;color:#fff;font-weight:700;line-height:1.3" id="modalCoverTitle">기(氣)의<br>과학</div>
+          </div>
+        </div>
+        <div class="reader-meta">
+          <h3 id="modalAuthor">이용근 교수</h3>
+          <p id="modalField">에너지 의학 · 치유관광</p>
+          <div class="reader-info-grid">
+            <div class="ri"><div class="ri-n">EN</div><div class="ri-l">영문판 제공</div></div>
+            <div class="ri"><div class="ri-n" id="modalPages">124p</div><div class="ri-l">분량</div></div>
+            <div class="ri"><div class="ri-n" id="modalRating">★4.8</div><div class="ri-l">평점</div></div>
+            <div class="ri"><div class="ri-n" id="modalReaders">2.3k</div><div class="ri-l">독자 수</div></div>
+          </div>
+          <button class="reader-read" onclick="closeReader()">✓ 관심 목록 추가</button>
+        </div>
+      </div>
+      <div class="reader-content-panel">
+        <div class="reader-tab-row">
+          <button class="rtab on" onclick="setRtab(this,'excerpt')">📖 미리보기</button>
+          <button class="rtab" onclick="setRtab(this,'english')">🇺🇸 English</button>
+          <button class="rtab" onclick="setRtab(this,'about')">저자 소개</button>
+        </div>
+        <div id="rtab-excerpt" class="reader-excerpt">
+          <h4 id="modalExcTitle">제1장 · 기(氣)와 뇌 — 동양이 서양을 만나다</h4>
+          <p id="modalExcP1">수천 년 동안 동양 의학은 인체의 에너지 흐름, 즉 기(氣)를 치유의 근본으로 삼아왔습니다. 하버드 의대 Christopher Palmer 교수는 2022년 저서 "Brain Energy"에서 모든 정신 질환이 뇌의 대사 장애에서 비롯된다고 주장했습니다. 이 두 관점은 놀랍도록 일치합니다.</p>
+          <blockquote id="modalQuote">"에너지 생산 시스템이 무너질 때 인간은 정신적으로 병든다" — Christopher M. Palmer, MD (Harvard)</blockquote>
+          <p id="modalExcP2">2008년 랫드 패혈증 임상에서 에너지 테라피를 적용받은 실험군은 100% 생존했습니다. 대조군은 전수 사망했습니다. 이 데이터가 K-MediWell 전자북 플랫폼의 과학적 근거입니다.</p>
+        </div>
+        <div id="rtab-english" class="reader-excerpt" style="display:none">
+          <div class="en-note">🤖 AI Translation — Powered by K-MediWell Global Engine</div>
+          <h4>Chapter 1 · Gi (氣) and the Brain — Where East Meets West</h4>
+          <p>For millennia, Eastern medicine has regarded <em>gi</em> (氣) — the flow of vital energy within the human body — as the foundation of all healing. In 2022, Harvard Medical School's Dr. Christopher Palmer proposed in <em>Brain Energy</em> that all mental illness stems from metabolic disorders of the brain. The convergence of these two frameworks is striking.</p>
+          <blockquote>"When the energy production system collapses, humans fall mentally ill." — Christopher M. Palmer, MD (Harvard)</blockquote>
+          <p>In a 2008 rat sepsis trial, subjects receiving energy therapy showed 100% survival. The control group experienced total mortality. This data forms the scientific backbone of the K-MediWell ebook platform.</p>
+        </div>
+        <div id="rtab-about" class="reader-excerpt" style="display:none">
+          <h4>저자 소개</h4>
+          <p>국립공주대학교 스마트의료웰니스관광 대학원 교수. 2008년 이후 에너지 치료 임상 연구를 이끌어 왔으며, 치유관광산업육성법(2026.4.9) 제정의 학문적 기반을 마련했습니다.</p>
+          <p>K-MediWell 프로젝트 추진단 단장으로서 동양 에너지 의학과 하버드 뇌과학의 융합을 통해 세계 치유관광 표준을 선도하고 있습니다.</p>
+          <blockquote>전통은 언어의 벽에 갇혀 있을 때 유물이 되지만, 디지털 플랫폼을 탈 때 비로소 전 세계의 치유 에너지가 됩니다.</blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── SCREEN ROUTER ─── */
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  document.getElementById('s'+n).classList.add('active');
+  window.scrollTo(0,0);
+  if(n===3)startEEG();
+}
+
+/* ─── SCROLL NAV ─── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('up',window.scrollY>10);
+});
+
+/* ─── BOOKS DATA ─── */
+const BOOKS=[
+  {id:'energy',title:'기(氣)의 과학',author:'이용근',field:'에너지 의학',cat:'치유',
+   color:['#0d2d26','#2d8c72'],badge:'신규',
+   excTitle:'제1장 · 기(氣)와 뇌',excP1:'수천 년 동안 동양 의학은 인체의 에너지 흐름, 즉 기(氣)를 치유의 근본으로 삼아왔습니다. 하버드 의대 Christopher Palmer 교수는 2022년 "Brain Energy"에서 모든 정신 질환이 뇌의 대사 장애에서 비롯된다고 주장했습니다.',
+   quote:'"에너지 생산 시스템이 무너질 때 인간은 정신적으로 병든다" — Palmer MD (Harvard)',
+   excP2:'2008년 랫드 패혈증 임상에서 에너지 테라피 적용 실험군 100% 생존. 이 데이터가 K-MediWell의 과학적 근거입니다.',
+   pages:'124p',rating:'★4.8',readers:'2.3k'},
+  {id:'gayageum',title:'가야금과 치유',author:'김정숙',field:'전통음악·치유',cat:'치유',
+   color:['#2d1a0d','#8c5a2d'],badge:'신규',excTitle:'제1장 · 현(絃)의 공명',excP1:'가야금 25현은 인체의 25개 주요 경락과 대응됩니다. 각 현의 진동이 특정 장기의 에너지를 자극합니다.',quote:'"소리는 가장 빠른 기(氣)의 전달체다" — 김정숙',excP2:'암 환자 치유 현장에서 25년간 축적된 임상 경험을 기록한 최초의 영문 국악 치유서.',pages:'98p',rating:'★4.6',readers:'1.1k'},
+  {id:'juyeok',title:'주역으로 읽는 치유',author:'박철현',field:'동양철학',cat:'철학',
+   color:['#0a1f3a','#185fa5'],badge:'',excTitle:'제1괘 · 건(乾)과 생명 에너지',excP1:'주역 64괘는 자연과 인간 에너지의 변화 패턴을 담은 동양 최고의 시스템 이론입니다.',quote:'"변화를 아는 자만이 치유할 수 있다" — 주역 계사전',excP2:'현대 뇌과학의 언어로 재해석한 주역 치유의 원리. 영문판 동시 출판.',pages:'156p',rating:'★4.5',readers:'0.9k'},
+  {id:'musok',title:'무속 치유의 세계화',author:'이영희',field:'무속·정신문화',cat:'무속',
+   color:['#1a0d2d','#6b3aad'],badge:'베스트',excTitle:'굿 — 집단 치유의 원형',excP1:'굿은 단순한 의례가 아닙니다. 공동체 전체의 스트레스를 방출하는 집단 신경치유 프로토콜입니다.',quote:'"무당은 한국 최초의 치유사였다" — 이영희',excP2:'하버드 인류학과 공동 연구. 굿의 신경과학적 효과를 영문으로 처음 기록.',pages:'142p',rating:'★4.7',readers:'1.8k'},
+  {id:'hanyak',title:'한약과 미토콘드리아',author:'최성준',field:'한의학',cat:'한의학',
+   color:['#1a2d0d','#3a6b18'],badge:'',excTitle:'제1장 · 미토콘드리아와 기(氣)',excP1:'Palmer 교수의 Brain Energy 이론은 미토콘드리아 에너지 생산이 정신건강의 열쇠라고 말합니다. 한의학은 2,000년 전 이미 이를 알았습니다.',quote:'"기혈(氣血)은 미토콘드리아의 동양어다" — 최성준',excP2:'한약 처방의 미토콘드리아 활성화 기전을 현대 분자생물학으로 증명한 선구적 연구.',pages:'188p',rating:'★4.9',readers:'3.2k'},
+];
+
+const BOOKS2=[
+  {id:'nongak',title:'농악 — 땅의 리듬',author:'강진우',field:'전통타악',cat:'국악',color:['#2d1a0a','#7a4020'],badge:'',excTitle:'농악의 치유적 기능',excP1:'농악은 노동의 피로를 집단적으로 해소하는 한국식 음악치료입니다.',quote:'"대지의 박자는 심장의 박자와 같다"',excP2:'농악 체험 이후 참가자 코르티솔 수치 42% 감소. 국제 음악치료학회 발표 논문.',pages:'112p',rating:'★4.4',readers:'0.7k'},
+  {id:'kimchi',title:'발효와 장(腸) 치유',author:'한미래',field:'전통발효식품',cat:'치유',color:['#2d0a0a','#8c2020'],badge:'신규',excTitle:'장(腸)이 뇌를 고친다',excP1:'김치 유산균은 세계 최강의 프로바이오틱스입니다. 장-뇌 축(Gut-Brain Axis)을 통해 정신건강을 개선합니다.',quote:'"김치는 한국인의 천년 신경치유 음식이다"',excP2:'미국 NIH 연구팀과 공동 발표. 김치 유산균의 우울증 완화 효과 임상 확인.',pages:'134p',rating:'★4.7',readers:'2.1k'},
+  {id:'donguibogam',title:'동의보감 현대화',author:'정기원',field:'한의학 고전',cat:'한의학',color:['#0a1a2d','#1a4a6b'],badge:'베스트',excTitle:'허준의 통합 의학',excP1:'동의보감은 500년 전 완성된 세계 최초의 통합 의학 백과사전입니다.',quote:'"몸과 마음과 자연은 하나다" — 허준',excP2:'동의보감 전 25권을 현대 의학 언어로 재해석. 영문 완역판 출판 최초 시도.',pages:'412p',rating:'★5.0',readers:'4.1k'},
+  {id:'pansori',title:'판소리와 감정 치유',author:'송민아',field:'전통성악',cat:'국악',color:['#1a0d1a','#5a2d6b'],badge:'',excTitle:'소리의 감정 언어',excP1:'판소리의 득음(得音)은 단순히 큰 소리를 내는 기술이 아닙니다. 인간 감정의 모든 주파수를 소리로 방출하는 정서 치유 기술입니다.',quote:'"득음은 치유의 완성이다"',excP2:'판소리 수련자와 일반인 대조군 연구. 6개월 수련 후 불안 지수 38% 감소.',pages:'108p',rating:'★4.6',readers:'1.4k'},
+  {id:'templestay',title:'사찰 치유 — 내면으로의 여행',author:'법인 스님',field:'불교·명상',cat:'치유',color:['#1a1500','#4a3d00'],badge:'신규',excTitle:'침묵의 치유력',excP1:'108배, 선(禪) 명상, 발우공양 — 사찰 일상이 어떻게 현대인의 만성 스트레스를 해소하는지를 뇌과학으로 설명합니다.',quote:'"비움이 채움이다" — 법인',excP2:'세계 35개국 템플스테이 참가자 뇌파 연구. 3박4일 후 알파파 평균 62% 증가.',pages:'96p',rating:'★4.8',readers:'1.9k'},
+];
+
+function renderBooks(){
+  ['bookGrid1','bookGrid2'].forEach((id,i)=>{
+    const list=i===0?BOOKS:BOOKS2;
+    document.getElementById(id).innerHTML=list.map(b=>`
+      <div class="book-card" onclick="openReader('${b.id}')">
+        <div class="book-cover" style="background:linear-gradient(145deg,${b.color[0]},${b.color[1]})">
+          <div class="book-bg"></div>
+          ${b.badge?`<div class="book-badge ${b.badge==='신규'?'book-new':''}">${b.badge}</div>`:''}
+          <div class="book-text-content">
+            <div class="book-category">${b.field}</div>
+            <div class="book-title">${b.title}</div>
+            <div class="book-author">${b.author}</div>
+          </div>
+        </div>
+      </div>`).join('');
+  });
+}
+
+function openReader(id){
+  const all=[...BOOKS,...BOOKS2];
+  const b=all.find(x=>x.id===id)||all[0];
+  document.getElementById('modalTitle').textContent=b.title;
+  document.getElementById('modalCoverTitle').textContent=b.title;
+  document.getElementById('modalAuthor').textContent=b.author;
+  document.getElementById('modalField').textContent=b.field;
+  document.getElementById('modalPages').textContent=b.pages;
+  document.getElementById('modalRating').textContent=b.rating;
+  document.getElementById('modalReaders').textContent=b.readers;
+  document.getElementById('modalExcTitle').textContent=b.excTitle;
+  document.getElementById('modalExcP1').textContent=b.excP1;
+  document.getElementById('modalQuote').textContent=b.quote;
+  document.getElementById('modalExcP2').textContent=b.excP2;
+  document.getElementById('modalCover').style.background=`linear-gradient(145deg,${b.color[0]},${b.color[1]})`;
+  setRtab(document.querySelector('.rtab.on'),'excerpt');
+  document.getElementById('readerModal').classList.add('open');
+}
+function closeReader(){document.getElementById('readerModal').classList.remove('open')}
+function setRtab(el,tab){
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  ['excerpt','english','about'].forEach(t=>{
+    const el2=document.getElementById('rtab-'+t);
+    if(el2)el2.style.display=t===tab?'block':'none';
+  });
+}
+function filterBooks(q){
+  q=q.toLowerCase();
+  ['bookGrid1','bookGrid2'].forEach((id,i)=>{
+    const list=i===0?BOOKS:BOOKS2;
+    const cards=document.getElementById(id).querySelectorAll('.book-card');
+    cards.forEach((card,j)=>{
+      const b=list[j];
+      const match=!q||b.title.includes(q)||b.field.includes(q)||b.cat.includes(q);
+      card.style.display=match?'':'none';
+    });
+  });
+}
+function setTag(el,tag){
+  document.querySelectorAll('.nf-tag').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  ['bookGrid1','bookGrid2'].forEach((id,i)=>{
+    const list=i===0?BOOKS:BOOKS2;
+    const cards=document.getElementById(id).querySelectorAll('.book-card');
+    cards.forEach((card,j)=>{
+      const b=list[j];
+      const match=tag==='전체'||b.cat===tag;
+      card.style.display=match?'':'none';
+    });
+  });
+}
+
+/* ─── AUTHOR WIZARD ─── */
+let currentStep=1;
+function goStep(n){
+  document.querySelectorAll('.form-panel').forEach((p,i)=>{
+    p.classList.toggle('active',i+1===n);
+  });
+  ['wiz1','wiz2','wiz3','wiz4'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.classList.remove('current','done');
+    if(i+1===n)el.classList.add('current');
+    else if(i+1<n)el.classList.add('done');
+  });
+  currentStep=n;
+  if(n===3)calcRoyalty();
+  if(n===4)animateLangs();
+}
+function runAI(){
+  const out=document.getElementById('aiOutput');
+  out.style.display='none';
+  setTimeout(()=>{out.style.display='block';out.style.animation='fadeUp .4s ease'},400);
+}
+function toggleTrans(el){if(el.checked)runAI();}
+function calcRoyalty(){
+  const price=parseFloat(document.getElementById('price').value)||9.99;
+  const sales=parseInt(document.getElementById('sales').value)||500;
+  const lang=parseInt(document.getElementById('langCount').value)||3;
+  const gross=price*sales*lang;
+  const royalty=gross*0.35*0.85;
+  const krw=Math.round(royalty*1380);
+  document.getElementById('rc-price').textContent='$'+price.toFixed(2);
+  document.getElementById('rc-sales').textContent=sales+'부';
+  document.getElementById('rc-lang').textContent='×'+lang;
+  document.getElementById('rc-total').textContent='₩'+krw.toLocaleString();
+  document.getElementById('royaltyTotal').textContent='₩'+(krw/10000).toFixed(0)+'만';
+}
+function animateLangs(){
+  const vals=[95,70,60,45,30,25];
+  ['EN','JP','CN','FR','DE','ES'].forEach((l,i)=>{
+    setTimeout(()=>{document.getElementById('lang'+l).style.width=vals[i]+'%'},i*120);
+  });
+  const countries=['🇺🇸 미국','🇯🇵 일본','🇨🇳 중국','🇬🇧 영국','🇫🇷 프랑스','🇩🇪 독일','🇪🇸 스페인','🇨🇦 캐나다'];
+  document.getElementById('countryChips').innerHTML=countries.map(c=>`<span class="country-chip">${c}</span>`).join('');
+  document.getElementById('countryCount').textContent='35개';
+  document.getElementById('readerCount').textContent='1.5k';
+}
+function publishBook(){
+  const title=document.getElementById('bookTitle').value||'가야금의 소리';
+  document.getElementById('s-title').textContent=title;
+  const sales=parseInt(document.getElementById('sales').value)||500;
+  const lang=parseInt(document.getElementById('langCount').value)||3;
+  document.getElementById('s-readers').textContent=(sales*lang*3).toLocaleString();
+  document.getElementById('s-countries').textContent=lang===1?'12':lang===3?'35':'70';
+  document.getElementById('fp4').style.display='none';
+  document.getElementById('publishSuccess').style.display='block';
+}
+function resetAuthor(){
+  document.getElementById('fp4').style.display='';
+  document.getElementById('publishSuccess').style.display='none';
+  goStep(1);
+  ['EN','JP','CN','FR','DE','ES'].forEach(l=>{document.getElementById('lang'+l).style.width='0%'});
+  document.getElementById('countryChips').innerHTML='<span class="country-chip" style="opacity:.3">아직 없음</span>';
+  document.getElementById('countryCount').textContent='0';
+  document.getElementById('readerCount').textContent='0';
+  document.getElementById('royaltyTotal').textContent='₩0';
+}
+
+/* ─── EEG SIMULATION ─── */
+let eegAnim=null,eegPhase=0,therapyMode=0,sessionSec=0,measureCount=0,sessionTimer=null;
+const therapyNames=['기(氣) 에너지','국악·가야금 소리','금강 산림'];
+const therapyTargets=[
+  {d:1.2,a:9.2,b:14.1,t:7.4,s1:82,s2:75,s3:78,s4:68,score:84},
+  {d:0.8,a:10.5,b:11.2,t:8.8,s1:88,s2:82,s3:71,s4:75,score:91},
+  {d:1.5,a:8.9,b:16.2,t:6.2,s1:76,s2:88,s3:74,s4:80,score:87},
+];
+const therapyCurrent={d:1.2,a:8.4,b:22.1,t:5.8,s1:64,s2:58,s3:71,s4:49,score:72};
+let eegStarted=false;
+
+function startEEG(){
+  if(eegStarted)return;
+  eegStarted=true;
+  drawRing(72);
+  sessionTimer=setInterval(()=>{
+    sessionSec++;
+    const m=String(Math.floor(sessionSec/60)).padStart(2,'0');
+    const s=String(sessionSec%60).padStart(2,'0');
+    document.getElementById('si-time').textContent=m+':'+s;
+    if(sessionSec%5===0){
+      measureCount++;
+      document.getElementById('si-count').textContent=measureCount+'회';
+      const t=therapyTargets[therapyMode];
+      const prog=Math.min(measureCount/12,1);
+      ['s1','s2','s3','s4'].forEach((k,i)=>{
+        const cur=[64,58,71,49][i];
+        const val=Math.round(cur+(t[k]-cur)*prog);
+        document.getElementById('mv'+(i+1)).textContent=val+'%';
+        document.getElementById('mb'+(i+1)).style.width=val+'%';
+      });
+      const score=Math.round(72+(t.score-72)*prog);
+      document.getElementById('scoreLabel').textContent=score;
+      document.getElementById('scoreSub').textContent=score>=90?'치유 완성':'치유 진행 중...';
+      drawRing(score);
+    }
+  },1000);
+  drawEEG();
+}
+function selectTherapy(n){
+  therapyMode=n;
+  document.querySelectorAll('.therapy-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  document.getElementById('si-therapy').textContent=therapyNames[n];
+  measureCount=0;sessionSec=0;
+  document.getElementById('si-count').textContent='0회';
+  document.getElementById('si-time').textContent='00:00';
+  document.getElementById('scoreLabel').textContent='72';
+  document.getElementById('scoreSub').textContent='치유 진행 중...';
+  drawRing(72);
+  ['s1','s2','s3','s4'].forEach((k,i)=>{
+    const cur=[64,58,71,49][i];
+    document.getElementById('mv'+(i+1)).textContent=cur+'%';
+    document.getElementById('mb'+(i+1)).style.width=cur+'%';
+  });
+}
+function drawEEG(){
+  const canvas=document.getElementById('eegCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const channels=[
+    {y:H*0.2,color:'#2d8c72',freq:therapyMode===1?12:therapyMode===2?9:10,amp:therapyMode===0?12:8},
+    {y:H*0.4,color:'#d4a53b',freq:therapyMode===0?22:therapyMode===1?15:18,amp:therapyMode===1?6:10},
+    {y:H*0.6,color:'#7a5aad',freq:6,amp:therapyMode===2?10:7},
+    {y:H*0.8,color:'#4a9aad',freq:therapyMode===1?9:therapyMode===2?8:7,amp:therapyMode===0?8:11},
+  ];
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(10,15,26,0)';ctx.fillRect(0,0,W,H);
+    channels.forEach(ch=>{
+      ctx.beginPath();ctx.strokeStyle=ch.color;ctx.lineWidth=1.5;ctx.globalAlpha=.85;
+      for(let x=0;x<W;x++){
+        const t=x/W*4*Math.PI+eegPhase;
+        const noise=(Math.random()-.5)*2;
+        const y=ch.y+Math.sin(t*ch.freq*.3)*ch.amp+Math.sin(t*ch.freq*.7)*ch.amp*.4+noise;
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.stroke();ctx.globalAlpha=1;
+    });
+    eegPhase+=0.04;
+    eegAnim=requestAnimationFrame(frame);
+  }
+  if(eegAnim)cancelAnimationFrame(eegAnim);
+  frame();
+}
+function drawRing(score){
+  const canvas=document.getElementById('ringCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2,r=64;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=8;ctx.stroke();
+  const angle=-Math.PI/2+Math.PI*2*(score/100);
+  const grad=ctx.createLinearGradient(cx-r,cy,cx+r,cy);
+  grad.addColorStop(0,'#1a6b5a');grad.addColorStop(1,'#2d8c72');
+  ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,angle);
+  ctx.strokeStyle=grad;ctx.lineWidth=8;ctx.lineCap='round';ctx.stroke();
+}
+function generateReport(){
+  alert('📊 치유 리포트 생성 완료!\n\n'+
+    '테라피: '+therapyNames[therapyMode]+'\n'+
+    '치유 점수: '+document.getElementById('scoreLabel').textContent+'/100\n'+
+    '세션 시간: '+document.getElementById('si-time').textContent+'\n'+
+    '측정 횟수: '+document.getElementById('si-count').textContent+'\n\n'+
+    'Before/After 뇌파 데이터 PDF 보고서가 생성되었습니다.\n(실제 플랫폼에서는 이메일로 자동 발송됩니다.)');
+}
+
+/* ─── GLOBAL HUB ─── */
+function selectHub(el,city,desc){
+  document.querySelectorAll('.hub-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ─── INIT ─── */
+renderBooks();
+calcRoyalty();
+</script>
+</body>
+</html>
